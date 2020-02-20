@@ -34,13 +34,18 @@ def home():
 def precipitation():
     session = Session(engine)
 
-    results = session.query(Measurement.prcp).all()
+    results = session.query(Measurement.prcp, Measurement.date).all()
 
     session.close()
 
-    all_prcp = list(np.ravel(results))
+    prcp_list = []
+    for prcp, date in results:
+        prcp_dict = {}
+        prcp_dict["prcp"] = prcp
+        prcp_dict["date"] = date
+        prcp_list.append(prcp_dict)        
 
-    return jsonify(all_prcp)
+    return jsonify(prcp_list)
     
 # Define what to do when a user hits the index route
 @app.route("/api/v1.0/stations")
