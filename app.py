@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-import date as dt 
+import datetime as dt 
 import numpy as np  
 import pandas as pd 
 import sqlalchemy  
@@ -32,25 +32,22 @@ def home():
     # Define what to do when a user hits the index route
 @app.route("/api/v1.0/precipitation")
 def precipitation():
-    return()
+    return "precip"
     
 # Define what to do when a user hits the index route
 @app.route("/api/v1.0/stations")
 def stations():
-    print("Server received request for 'Home' page...")
-    return "Welcome to my 'Home' page!"
+    return "stations"
 
 # Define what to do when a user hits the index route
 @app.route("/api/v1.0/tobs")
-def home():
-    print("Server received request for 'Home' page...")
-    return "Welcome to my 'Home' page!"
+def tobs():
+    return "tobs"
 
 # Define what to do when a user hits the index route
 @app.route("/api/v1.0/<start>/<end>")
-def home():
-    print("Server received request for 'Home' page...")
-    return "Welcome to my 'Home' page!"
+def hmmm():
+    return "hmmmmm"
 
 
 
