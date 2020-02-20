@@ -38,11 +38,12 @@ def precipitation():
 
     session.close()
 
+
     prcp_list = []
     for prcp, date in results:
         prcp_dict = {}
-        prcp_dict["prcp"] = prcp
-        prcp_dict["date"] = date
+        prcp_dict["Precipitation"] = prcp
+        prcp_dict["Date"] = date
         prcp_list.append(prcp_dict)        
 
     return jsonify(prcp_list)
@@ -59,7 +60,19 @@ def stations():
 # Define what to do when a user hits the index route
 @app.route("/api/v1.0/tobs")
 def tobs():
-    return "What do I want tobs to return?"
+    session = Session(engine)
+    sel = [Measurement.date, Measurement.tobs]
+    tobs_data = session.query(*sel).\
+        filter(Measurement.date >= '2016-08-24').all()
+    session.close()
+    return jsonify(tobs_data)
+
+    #session = Session(engine)
+    #results = session.query(Measurement.date, Measurement.tobs).\
+     #   filter(Measurement.date >= '2016-08-24').all()
+    #session.close()
+    #tobs_data = list(np.ravel(results))
+    #return jsonify(tobs_data)
 
 # Define what to do when a user hits the index route
 @app.route("/api/v1.0/<start>/<end>")
