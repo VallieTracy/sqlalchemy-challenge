@@ -23,31 +23,43 @@ def home():
     return(
         "Welcome to Hawaii Climate Analysis API!<br/>"
         "available routes:<br/>"
-        "<a href='/api/v1.0/precipitation'>Precipitation<a/>"
-        "<a href='/api/v1.0/stations'>Stations<a/>"
-        "<a href='/api/v1.0/tobs'>Tobs<a/>"
+        "<a href='/api/v1.0/precipitation'>Precipitation<a/><br/>"
+        "<a href='/api/v1.0/stations'>Stations<a/><br/>"
+        "<a href='/api/v1.0/tobs'>Tobs<a/><br/>"
         "<a href='/api/v1.0/<start>/<end>'>Start_End<a/>"
     )
 
     # Define what to do when a user hits the index route
 @app.route("/api/v1.0/precipitation")
 def precipitation():
-    return "precip"
+    session = Session(engine)
+
+    results = session.query(Measurement.prcp).all()
+
+    session.close()
+
+    all_prcp = list(np.ravel(results))
+
+    return jsonify(all_prcp)
     
 # Define what to do when a user hits the index route
 @app.route("/api/v1.0/stations")
 def stations():
-    return "stations"
+    session = Session(engine)
+    results = session.query(Station.station).all()
+    session.close()
+    all_stations = list(np.ravel(results))
+    return jsonify(all_stations)
 
 # Define what to do when a user hits the index route
 @app.route("/api/v1.0/tobs")
 def tobs():
-    return "tobs"
+    return "What do I want tobs to return?"
 
 # Define what to do when a user hits the index route
 @app.route("/api/v1.0/<start>/<end>")
 def hmmm():
-    return "hmmmmm"
+    return "And this one doesn't work"
 
 
 
