@@ -65,32 +65,51 @@ def precipitation():
     return jsonify(prcp_dict)
     
     
-# Define what to do when a user hits the index route
+# 'Stations' route
 @app.route("/api/v1.0/stations")
 def stations():
+    """Retunrs JSON list of all stations"""
+    
+    # Create session from Python to DB
     session = Session(engine)
+
+    # Query all stations
     results = session.query(Station.station).all()
+    
+    #close session
     session.close()
+
+    # Convert list of tuples into normal list
     all_stations = list(np.ravel(results))
+    
+    #return results as JSON
     return jsonify(all_stations)
 
-# Define what to do when a user hits the index route
+# Define what to do when a user hits 'Tobs' route
 @app.route("/api/v1.0/tobs")
 def tobs():
+    """Return a JSON list of Temperature Observations (tobs) for the data's most recent 12 months,
+    looking at the most active Station, USC00519281"""
+    
+    # Create session between Python and DB
     session = Session(engine)
+
+    # Create start_date variable in order to filter the data
+    start_date = dt.date(2017, 8, 18) - dt.timedelta(days=365)
+    
+    # Query, filtering by start_date and station
     sel = [Measurement.date, Measurement.tobs]
     tobs_data = session.query(*sel).\
-        filter(Measurement.date >= '2016-08-24').all()
+        filter(Measurement.date >= start_date).\
+        filter(Measurement.station == 'USC00519281').all()
+    
+    # Close session
     session.close()
+
+    # Return jsonified data to user
     return jsonify(tobs_data)
 
-    # Lines 71-76 retunrs one giant list of dates and tobs
-    #session = Session(engine)
-    #results = session.query(Measurement.date, Measurement.tobs).\
-       #filter(Measurement.date >= '2016-08-24').all()
-    #session.close()
-    #tobs_data = list(np.ravel(results))
-    #return jsonify(tobs_data)
+    
 
 # Define what to do when a user hits the index route
 @app.route("/api/v1.0/<start_date>/<end_date>")
