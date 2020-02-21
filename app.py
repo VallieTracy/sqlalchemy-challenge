@@ -22,11 +22,11 @@ app = Flask(__name__)
 def home():
     return(
         "Welcome to Hawaii Climate Analysis API!<br/>"
-        "available routes:<br/>"
+        "Available routes:<br/>"
         "<a href='/api/v1.0/precipitation'>Precipitation<a/><br/>"
         "<a href='/api/v1.0/stations'>Stations<a/><br/>"
         "<a href='/api/v1.0/tobs'>Tobs<a/><br/>"
-        "<a href='/api/v1.0/<start>/<end>'>Start_End<a/>"
+        "<a href='/api/v1.0/<start>/<end>'>Stats<a/>"
     )
 
     # Define what to do when a user hits the index route
@@ -61,23 +61,32 @@ def stations():
 @app.route("/api/v1.0/tobs")
 def tobs():
     session = Session(engine)
-    sel = [Measurement.date, Measurement.tobs]
+    sel = [Measurement.station, Measurement.date, Measurement.tobs]
     tobs_data = session.query(*sel).\
         filter(Measurement.date >= '2016-08-24').all()
     session.close()
     return jsonify(tobs_data)
 
+    # Lines 71-76 retunrs one giant list of dates and tobs
     #session = Session(engine)
     #results = session.query(Measurement.date, Measurement.tobs).\
-     #   filter(Measurement.date >= '2016-08-24').all()
+       #filter(Measurement.date >= '2016-08-24').all()
     #session.close()
     #tobs_data = list(np.ravel(results))
     #return jsonify(tobs_data)
 
 # Define what to do when a user hits the index route
 @app.route("/api/v1.0/<start>/<end>")
-def hmmm():
-    return "And this one doesn't work"
+def calc_temps(start_date, end_date):
+    session = Session(engine)
+    stats = session.query(func.min(Measurement.tobs),\
+                             func.avg(Measurement.tobs),\
+                             func.max(Measurement.tobs)).\
+                filter(Measurement.date >= start_date).\
+                filter(Measurement.date <= end_date).all()            
+    session.close()
+    return jsonify(stats)
+    
 
 
 
