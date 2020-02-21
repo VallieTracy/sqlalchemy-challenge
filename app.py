@@ -49,14 +49,18 @@ def precipitation():
     session.close()
 
 
-    prcp_list = []
+    # prcp_list = []
+    prcp_dict = {}
     for prcp, date in results:
-        prcp_dict = {}
-        prcp_dict["Precipitation"] = prcp
-        prcp_dict["Date"] = date
-        prcp_list.append(prcp_dict)        
+        # prcp_dict = {}
+        # prcp_dict = {date:prcp}
+        prcp_dict[date] = prcp
+        # prcp_dict["Precipitation"] = prcp
+        # prcp_dict["Date"] = date
+        # prcp_list.append(prcp_dict)        
 
-    return jsonify(prcp_list)
+    return jsonify(prcp_dict)
+    # return jsonify(prcp_list)
     
 # Define what to do when a user hits the index route
 @app.route("/api/v1.0/stations")
@@ -71,7 +75,7 @@ def stations():
 @app.route("/api/v1.0/tobs")
 def tobs():
     session = Session(engine)
-    sel = [Measurement.station, Measurement.date, Measurement.tobs]
+    sel = [Measurement.date, Measurement.tobs]
     tobs_data = session.query(*sel).\
         filter(Measurement.date >= '2016-08-24').all()
     session.close()
@@ -86,16 +90,30 @@ def tobs():
     #return jsonify(tobs_data)
 
 # Define what to do when a user hits the index route
-@app.route("/api/v1.0/<start>/<end>")
-def calc_temps(start_date, end_date):
-    session = Session(engine)
-    stats = session.query(func.min(Measurement.tobs),\
-                             func.avg(Measurement.tobs),\
-                             func.max(Measurement.tobs)).\
-                filter(Measurement.date >= start_date).\
-                filter(Measurement.date <= end_date).all()            
-    session.close()
-    return jsonify(stats)
+@app.route("/api/v1.0/<start_date>/<end_date>")
+def calc_temps(start_date = None, end_date = None):
+
+    # sel = [func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)]
+
+    # if not end_date:
+    #     results = session.query(*sel).filter(Measurement.date >= start_date).all()
+    #     temps = list(np.ravel(results))
+    #     return jsonify(temps)
+
+    # results = session.query(*sel).filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
+    # temps = list(np.ravel(results))
+    # return jsonify(temps)
+    return "Hello World!!!"
+
+
+    # session = Session(engine)
+    # stats = session.query(func.min(Measurement.tobs),\
+    #                          func.avg(Measurement.tobs),\
+    #                          func.max(Measurement.tobs)).\
+    #             filter(Measurement.date >= start_date).\
+    #             filter(Measurement.date <= end_date).all()            
+    # session.close()
+    # return jsonify(stats)
     
 
 
