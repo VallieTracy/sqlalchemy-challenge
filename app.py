@@ -21,8 +21,7 @@ Base.prepare(engine, reflect=True)
 Measurement = Base.classes.measurement
 Station = Base.classes.station
 
-# Create our session (link) from Python to the database
-session = Session(engine)
+
 
 # Create a Flask app
 app = Flask(__name__)
@@ -30,6 +29,7 @@ app = Flask(__name__)
 # Define what to do when a user hits the index route
 @app.route("/")
 def home():
+    """List all available api routes."""
     return(
         "Welcome to Hawaii Climate Analysis API!<br/>"
         "Available routes:<br/>"
@@ -39,28 +39,31 @@ def home():
         "<a href='/api/v1.0/<start>/<end>'>Stats<a/>"
     )
 
-    # Define what to do when a user hits the index route
+# Define what to do when a user hits the 'Precipiation' route
 @app.route("/api/v1.0/precipitation")
 def precipitation():
+    """Return dictionary using date as the key and prcp as the value."""
+   
+    # Create our session (link) from Python to the database
     session = Session(engine)
 
+    # Query all prcp and dates
     results = session.query(Measurement.prcp, Measurement.date).all()
 
+    # Close out our link
     session.close()
 
-
-    # prcp_list = []
+    # Create an empty dictionary to hold our prcp and date data
     prcp_dict = {}
+    
+    # Define query results as we want in the dictionary
     for prcp, date in results:
-        # prcp_dict = {}
-        # prcp_dict = {date:prcp}
+        # Want date as key and prcp as value
         prcp_dict[date] = prcp
-        # prcp_dict["Precipitation"] = prcp
-        # prcp_dict["Date"] = date
-        # prcp_list.append(prcp_dict)        
-
+    
+    # Return results in json format
     return jsonify(prcp_dict)
-    # return jsonify(prcp_list)
+    
     
 # Define what to do when a user hits the index route
 @app.route("/api/v1.0/stations")
