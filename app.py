@@ -1,3 +1,4 @@
+# Import modules
 from flask import Flask, jsonify
 import datetime as dt 
 import numpy as np  
@@ -7,14 +8,23 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 
+# Setup SQLite database
 engine = create_engine("sqlite:///Resources/hawaii.sqlite")
+
+# Reflect database into a new model
 Base = automap_base()
+
+# Reflect tables
 Base.prepare(engine, reflect=True)
+
+# Save references to the tables
 Measurement = Base.classes.measurement
 Station = Base.classes.station
 
+# Create our session (link) from Python to the database
 session = Session(engine)
 
+# Create a Flask app
 app = Flask(__name__)
 
 # Define what to do when a user hits the index route
