@@ -36,7 +36,7 @@ def home():
         "<a href='/api/v1.0/precipitation'>Precipitation<a/><br/>"
         "<a href='/api/v1.0/stations'>Stations<a/><br/>"
         "<a href='/api/v1.0/tobs'>Tobs<a/><br/>"
-        "<a href='/api/v1.0/<start>/<end>'>Stats<a/>"
+        "<a href='/api/v1.0/<start>/<end>'>calc_temps<a/>"
     )
 
 # Define what to do when a user hits the 'Precipiation' route
@@ -109,15 +109,14 @@ def tobs():
     # Return jsonified data to user
     return jsonify(tobs_data)
 
-    
-
-# Define what to do when a user hits the index route
+# Define 'calc_temps' route
 @app.route("/api/v1.0/<start_date>/<end_date>")
 def calc_temps(start_date = None, end_date = None):
-
+    
     # sel = [func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)]
 
     # if not end_date:
+    #     session = Session(engine)
     #     results = session.query(*sel).filter(Measurement.date >= start_date).all()
     #     temps = list(np.ravel(results))
     #     return jsonify(temps)
@@ -125,17 +124,10 @@ def calc_temps(start_date = None, end_date = None):
     # results = session.query(*sel).filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
     # temps = list(np.ravel(results))
     # return jsonify(temps)
+    
     return "Hello World!!!"
 
 
-    # session = Session(engine)
-    # stats = session.query(func.min(Measurement.tobs),\
-    #                          func.avg(Measurement.tobs),\
-    #                          func.max(Measurement.tobs)).\
-    #             filter(Measurement.date >= start_date).\
-    #             filter(Measurement.date <= end_date).all()            
-    # session.close()
-    # return jsonify(stats)
     
 
 
