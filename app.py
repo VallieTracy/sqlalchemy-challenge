@@ -21,6 +21,8 @@ Base.prepare(engine, reflect=True)
 Measurement = Base.classes.measurement
 Station = Base.classes.station
 
+session = Session(engine)
+
 
 
 # Create a Flask app
@@ -113,19 +115,28 @@ def tobs():
 @app.route("/api/v1.0/<start_date>/<end_date>")
 def calc_temps(start_date = None, end_date = None):
     
-    # sel = [func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)]
-
-    # if not end_date:
-    #     session = Session(engine)
-    #     results = session.query(*sel).filter(Measurement.date >= start_date).all()
-    #     temps = list(np.ravel(results))
-    #     return jsonify(temps)
-
-    # results = session.query(*sel).filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
-    # temps = list(np.ravel(results))
-    # return jsonify(temps)
     
-    return "Hello World!!!"
+    
+    
+    sel = [func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)]
+
+    if not end_date:
+        
+        results = session.query(*sel).filter(Measurement.date >= start_date).all()
+        temps = list(np.ravel(results))
+        session.close()
+        return jsonify(temps)
+
+    results = session.query(*sel).filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
+    temps = list(np.ravel(results))
+
+    # Close session
+    session.close()
+
+    return jsonify(temps)
+    
+   
+
 
 
     
