@@ -1,4 +1,4 @@
-# Import modules
+# 1. Import modules
 from flask import Flask, jsonify
 import datetime as dt 
 import numpy as np  
@@ -21,13 +21,13 @@ Base.prepare(engine, reflect=True)
 Measurement = Base.classes.measurement
 Station = Base.classes.station
 
+# Create session (link) from Python to database
 session = Session(engine)
 
-
-
-# Create a Flask app
+# 2. Create a Flask app
 app = Flask(__name__)
 
+# 3. Define static routes
 # Define what to do when a user hits the index route
 @app.route("/")
 def home():
@@ -38,7 +38,7 @@ def home():
         "<a href='/api/v1.0/precipitation'>Precipitation<a/><br/>"
         "<a href='/api/v1.0/stations'>Stations<a/><br/>"
         "<a href='/api/v1.0/tobs'>Tobs<a/><br/>"
-        "<a href='/api/v1.0/<start>/<end>'>calc_temps<a/>"
+        "<a href='/api/v1.0/<start>/<end>'>Temp_Stats<a/>"
     )
 
 # Define what to do when a user hits the 'Precipiation' route
@@ -111,22 +111,27 @@ def tobs():
     # Return jsonified data to user
     return jsonify(tobs_data)
 
-# Define 'calc_temps' route
+# Define 'Temp_Stats' route
 @app.route("/api/v1.0/<start_date>/<end_date>")
 def calc_temps(start_date = None, end_date = None):
+    """Return a JSON list of the minimum temp, the average temp, and the max temp for a given start or start-end range;
+    When given the start only, calculate TMIN, TAVG, and TMAX for all dates greater than and equal to the start date;
+    When given the start and the end date, calculate the TMIN, TAVG, and TMAX for dates between the start and end date inclusive"""    
     
+    # Create session between Python and database
+    session = Session(engine)
     
-    
-    
+    # Create variable to hold functions to find mmin, average, and max stats on tobs data
     sel = [func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)]
 
-    if not end_date:
-        
+    # If user doesn't specify end_date, query based on start_date
+    if not end_date:        
         results = session.query(*sel).filter(Measurement.date >= start_date).all()
         temps = list(np.ravel(results))
         session.close()
         return jsonify(temps)
-
+        
+    # If user does specify end_date, query based on start & end date
     results = session.query(*sel).filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
     temps = list(np.ravel(results))
 
@@ -134,15 +139,11 @@ def calc_temps(start_date = None, end_date = None):
     session.close()
 
     return jsonify(temps)
-    
-   
 
+# Close session
+# I did both 'local' and 'global' sessions.  Maybe overkill?  But Dom (professor) said it's good practice.  FYI.
+session.close() 
 
-
-    
-
-
-
-
+# 4. Define main behavior
 if __name__ == "__main__":
     app.run(debug=True)
